@@ -66,7 +66,10 @@ if __name__ == '__main__':
 
     copied = []
 
-    for video_file in glob.glob(os.path.join(takeout_dir, '**/*.mp4'), recursive=True):
+    for video_file in glob.glob(os.path.join(takeout_dir, '**/*.*'), recursive=True):
+        if not video_file.lower().endswith('.mp4') and not video_file.lower().endswith('.mov'):
+            continue
+
         if zipfile.is_zipfile(video_file):
             try:
                 z = zipfile.ZipFile(video_file)
