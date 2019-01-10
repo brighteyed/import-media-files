@@ -10,46 +10,50 @@ import shutil
 import exifread
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Import photo files')
-    parser.add_argument('--takeout-dir', type=str,
-                        help='Directory with photos')
+    parser = argparse.ArgumentParser(description='Import photos into folder')
+    parser.add_argument('--src-dir', type=str,
+                        help='Directory containing photos (*.jpg)')
     parser.add_argument('--out-dir', type=str,
                         help='Destination directory')
+    parser.add_argument('--log-file', type=str,
+                        help='Output file for imported photos list')
 
     args = parser.parse_args()
+    log_file = args.log_file
     out_dir = args.out_dir
-    takeout_dir = args.takeout_dir
+    src_dir = args.src_dir
 
-    copied = []
+    imported = []
 
-    for src_file in glob.glob(os.path.join(takeout_dir, '**/*.jpg'), recursive=True):
+    for src_file in glob.glob(os.path.join(src_dir, '**/*.jpg'), recursive=True):
         try:
             with open(src_file, 'rb') as file:
                 tags = exifread.process_file(file, details=False)
                 if 'EXIF DateTimeOriginal' not in tags.keys():
-                    print('[ERROR] No tag in {0}'.format(src_file))
+                    print('[ERROR] No EXIF info found in {0}'.format(src_file))
                     continue
 
                 try:
                     dt = datetime.datetime.strptime(str(tags['EXIF DateTimeOriginal']).split(' ')[0], '%Y:%m:%d')
-                    dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
-                    os.makedirs(dir, exist_ok=True)
+                    dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
+                    os.makedirs(dst_dir, exist_ok=True)
 
-                    dst_file = os.path.join(dir, os.path.basename(src_file))
+                    dst_file = os.path.join(dst_dir, os.path.basename(src_file))
                     if os.path.exists(dst_file):
                         print('[WARNING] File already exists {0}'.format(dst_file))
                         continue
 
-                    print('{0} -> {1}'.format(src_file, dst_file))
-                    shutil.copyfile(src_file, dst_file)
+                    shutil.copy(src_file, dst_dir)
 
-                    copied.append(os.sep.join(os.path.normpath(dst_file).split(os.sep)[-2:]))
+                    imported.append(os.sep.join(
+                        [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]
+                        ))
 
                 except ValueError:
-                    print('[ERROR] Ошибка обработки файла {0}'.format(src_file))
+                    print('[ERROR] ValueError {0}'.format(src_file))
 
         except PermissionError:
             print('[ERROR] PermissionError {0}'.format(src_file))
     
-    with open(os.path.join(out_dir, '.imported_photo.json'), 'w', encoding='utf-8') as importedfile:
-        json.dump({'files': copied}, importedfile, ensure_ascii=False, indent=4)
+    with open(log_file, 'w', encoding='utf-8') as logfile:
+        json.dump({'files': imported}, logfile, ensure_ascii=False, indent=4)
