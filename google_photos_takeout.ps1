@@ -26,5 +26,5 @@ python .\create_albums_metadata.py --takeout-dir=$takeout_dir --out-dir=$import_
 ">>> DONE`n" | Out-File -append $log_file
 
 ">>> CREATE ALBUMS" | Out-File -append $log_file
-python .\create_albums.py --files-dir=$import_dir --metadata-dir=$import_dir --out-dir=$albums_dir | Out-File -append $log_file
+python .\create_albums.py --src-dir=$import_dir --out-dir=$albums_dir | Out-File -append $log_file
 ">>> DONE`n" | Out-File -append  $log_file

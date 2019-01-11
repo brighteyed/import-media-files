@@ -1,47 +1,43 @@
 #!/usr/bin/python
 
 import argparse
-import datetime
 import glob
 import json
 import os
-import re
 import shutil
-import sys
-import uuid
-
-import exifread
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Create albums')
-    parser.add_argument('--files-dir', type=str,
-                        help='Directory photo and video files')
-    parser.add_argument('--metadata-dir', type=str,
-                        help='Directory albums metadata')
+    parser = argparse.ArgumentParser(description='Copy media files into albums')
+    parser.add_argument('--src-dir', type=str,
+                        help='Directory containing imported photos, videos and albums metadata files')
     parser.add_argument('--out-dir', type=str,
                         help='Destination directory for albums')
 
     args = parser.parse_args()
-    metadata_dir = args.metadata_dir
     out_dir = args.out_dir
-    files_dir = args.files_dir
+    src_dir = args.src_dir
 
-    for album_file in glob.glob(os.path.join(metadata_dir, '*.json'), recursive=False):
-        album_name = os.path.basename(os.path.splitext(album_file)[0])
-        os.makedirs(os.path.join(out_dir, album_name), exist_ok=True)
+    for album_file in glob.glob(os.path.join(src_dir, '*.json'), recursive=False):
+        album_dir_name = os.path.basename(os.path.splitext(album_file)[0])
 
         with open(album_file, encoding='utf-8') as albumdata_file:
             albumdata = json.load(albumdata_file)
+            if not albumdata['files']:
+                print("[INFO] Album {0} is empty and therefore will not be created".format(albumdata['title']))
+                continue
+
+            album_dir_path = os.path.join(out_dir, album_dir_name)
+            os.makedirs(album_dir_path, exist_ok=True)
 
             print('[INFO] Creating album {0}'.format(albumdata['title']))
+            shutil.copy(album_file, album_dir_path)
+
             for file in albumdata['files']:
-                media_file = os.path.join(files_dir, file)
+                media_file = os.path.join(src_dir, file)
                 
                 if not os.path.exists(media_file):
-                    print('[ERROR]: Не могу поместить фото в альбом. Файл {0} отсутствует'.format(media_file))
+                    print("[ERROR] Can't place photo {0} into album. File not found".format(media_file))
                     continue
 
-                shutil.copy(media_file, os.path.join(out_dir, album_name))
-
-            shutil.copy(album_file, os.path.join(out_dir, album_name))
+                shutil.copy(media_file, album_dir_path)
