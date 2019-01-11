@@ -22,7 +22,7 @@ python .\import_video.py --src-dir=$takeout_dir --out-dir=$import_dir --log-file
 ">>> DONE`n" | Out-File -append $log_file
 
 ">>> CREATE ALBUMS METADATA"| Out-File -append $log_file
-python .\albums_metadata.py --takeout-dir=$takeout_dir --out-dir=$import_dir | Out-File -append $log_file
+python .\create_albums_metadata.py --takeout-dir=$takeout_dir --out-dir=$import_dir | Out-File -append $log_file
 ">>> DONE`n" | Out-File -append $log_file
 
 ">>> CREATE ALBUMS" | Out-File -append $log_file
