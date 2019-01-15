@@ -1,27 +1,39 @@
 #!/usr/bin/python
 
 import argparse
-import datetime
 import glob
 import json
 import os
-import re
-import shutil
-import sys
-import uuid
 
-import exifread
+
+def removeEmptyFolders(path, removeRoot=True):
+    """ Recursively remove empty folders """
+    
+    if not os.path.isdir(path):
+        return
+
+    entries = os.listdir(path)
+    for entry in entries:
+        fullpath = os.path.join(path, entry)
+        if os.path.isdir(fullpath):
+            removeEmptyFolders(fullpath)
+
+    if len(entries) == 0 and removeRoot:
+        os.rmdir(path)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Delete all files')
+    parser = argparse.ArgumentParser(description='Delete previously imported files')
     parser.add_argument('--files-dir', type=str,
                         help='Directory with photo and video files')
+    parser.add_argument('--log-files', type=str, nargs='+',
+                        help='Log files that were generated during import')
 
     args = parser.parse_args()
     files_dir = args.files_dir
+    log_files = args.log_files
 
-    for filename in ['.imported_photo.json', '.imported_video.json']:
+    for filename in log_files:
         with open(os.path.join(files_dir, filename), encoding='utf-8') as import_data_file:
             data = json.load(import_data_file)
 
@@ -29,12 +41,11 @@ if __name__ == '__main__':
                 media_file = os.path.join(files_dir, file)
                 
                 if not os.path.exists(media_file):
-                    print('[WARNING]: Файл {0} отсутствует'.format(media_file))
+                    print('[WARNING]: File not found {0}'.format(media_file))
                     continue
 
                 os.remove(media_file)
         
         os.remove(os.path.join(files_dir, filename))
-
-    for json_file in glob.glob(os.path.join(files_dir, '*.json'), recursive=False):
-        os.remove(json_file)
+    
+    removeEmptyFolders(files_dir, False)
