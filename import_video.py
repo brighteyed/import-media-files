@@ -20,31 +20,32 @@ def copy_file(video_file, out_dir):
     info = json.loads(out.decode('utf-8'))
     creation_time_found = False
 
-    for stream in info['streams']:
-        if not 'tags' in stream:
-            continue
+    if 'streams' in info:
+        for stream in info['streams']:
+            if not 'tags' in stream:
+                continue
 
-        tags = stream['tags']
+            tags = stream['tags']
 
-        if 'creation_time' in tags:
-            creation_time_found = True
+            if 'creation_time' in tags:
+                creation_time_found = True
 
-            dt = datetime.datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-            dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
-            
-            dst_file = os.path.join(dst_dir, os.path.basename(video_file))
-            if os.path.exists(dst_file):
-                print('[WARNING] File already exists {0}'.format(dst_file))
+                dt = datetime.datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
+                
+                dst_file = os.path.join(dst_dir, os.path.basename(video_file))
+                if os.path.exists(dst_file):
+                    print('[WARNING] File already exists {0}'.format(dst_file))
+                    break
+
+                os.makedirs(dst_dir, exist_ok=True)
+                shutil.copy(video_file, dst_dir)
+
+                imported.append(os.sep.join(
+                    [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]
+                    ))
+
                 break
-
-            os.makedirs(dst_dir, exist_ok=True)
-            shutil.copy(video_file, dst_dir)
-
-            imported.append(os.sep.join(
-                [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]
-                ))
-
-            break
 
     if not creation_time_found:
         print('[ERROR] Creation time not found in {0}'.format(video_file))
