@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import shutil
+import uuid
 
 
 if __name__ == '__main__':
@@ -23,6 +24,11 @@ if __name__ == '__main__':
 
     for album_file in glob.glob(os.path.join(src_dir, '*.json'), recursive=False):
         album_dir_name = os.path.basename(os.path.splitext(album_file)[0])
+
+        try:
+            _tmp = uuid.UUID(album_dir_name)
+        except ValueError:
+            continue
 
         with open(album_file, encoding='utf-8') as albumdata_file:
             albumdata = json.load(albumdata_file)
