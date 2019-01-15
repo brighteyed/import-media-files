@@ -8,11 +8,14 @@ import shutil
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Copy media files into albums')
+    parser = argparse.ArgumentParser(description= \
+        '''Copy media files into folders (one folder per album) according to album
+        descriptions provided in <UUID>.json files''')
+        
     parser.add_argument('--src-dir', type=str,
-                        help='Directory containing imported photos, videos and albums metadata files')
+                        help='directory containing imported photos, videos and albums metadata files')
     parser.add_argument('--out-dir', type=str,
-                        help='Destination directory for albums')
+                        help='destination directory for albums')
 
     args = parser.parse_args()
     out_dir = args.out_dir

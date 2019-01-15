@@ -23,11 +23,14 @@ def removeEmptyFolders(path, removeRoot=True):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Delete previously imported files')
+    parser = argparse.ArgumentParser(description= \
+        '''Delete previously imported files. It uses log files that was generated
+        while importing''')
+
     parser.add_argument('--files-dir', type=str,
-                        help='Directory with photo and video files')
+                        help='directory with photo and video files')
     parser.add_argument('--log-files', type=str, nargs='+',
-                        help='Log files that were generated during import')
+                        help='log files that were generated during import')
 
     args = parser.parse_args()
     files_dir = args.files_dir

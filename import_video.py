@@ -60,13 +60,16 @@ def safe_remove_file(file):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Import videos into folder')
+    parser = argparse.ArgumentParser(description= \
+        '''Import videos (*.mp4; *.mov) into specifed folder organizing them according to "creation_time" information
+        found in any of its media streams. If video is zipped then it will be extracted''')
+        
     parser.add_argument('--src-dir', type=str,
-                        help='Directory containing videos (*.mp4; *.mov)')
+                        help='directory containing videos (*.mp4; *.mov)')
     parser.add_argument('--out-dir', type=str,
-                        help='Destination directory')
+                        help='destination directory')
     parser.add_argument('--log-file', type=str,
-                        help='Output file for imported videos list')
+                        help='output file for imported videos list')
 
     args = parser.parse_args()
     log_file = args.log_file
