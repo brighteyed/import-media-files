@@ -9,91 +9,105 @@ import shutil
 import subprocess
 import zipfile
 
-import exifread
 
+def copy_file(video_file, out_dir):
+    """ Copy video file into %Y-%m-%d subfolder of the out_dir """
 
-def process_file(sourcefile, tempfile, out_dir):
-    """ Copy video file into %Y-%m-%d subfolder in the out_dir """
-
-    cmnd = ['ffprobe.exe', '-show_streams', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(tempfile)]
+    cmnd = ['ffprobe.exe', '-show_streams', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
     p = subprocess.Popen(cmnd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, _err = p.communicate()
     
     info = json.loads(out.decode('utf-8'))
-    tags_found = False
+    creation_time_found = False
 
-    for stream in info['streams']:
-        if not 'tags' in stream:
-            continue
+    if 'streams' in info:
+        for stream in info['streams']:
+            if not 'tags' in stream:
+                continue
 
-        tags = stream['tags']
+            tags = stream['tags']
 
-        if 'creation_time' in tags:
-            dt = datetime.datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-            dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
-            os.makedirs(dir, exist_ok=True)
+            if 'creation_time' in tags:
+                creation_time_found = True
 
-            tags_found = True
+                dt = datetime.datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
+                
+                dst_file = os.path.join(dst_dir, os.path.basename(video_file))
+                if os.path.exists(dst_file):
+                    print('[WARNING] File already exists {0}'.format(dst_file))
+                    break
 
-            dst_file = os.path.join(dir, os.path.basename(sourcefile))
-            if os.path.exists(dst_file):
-                print('[WARNING] File already exists {0}'.format(dst_file))
+                os.makedirs(dst_dir, exist_ok=True)
+                shutil.copy(video_file, dst_dir)
+
+                imported.append(os.sep.join(
+                    [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]
+                    ))
+
                 break
 
-            copied.append(os.sep.join(os.path.normpath(dst_file).split(os.sep)[-2:]))
-            print('{0} -> {1}'.format(sourcefile, dst_file))
-            shutil.copy(sourcefile, dir)
-            break
+    if not creation_time_found:
+        print('[ERROR] Creation time not found in {0}'.format(video_file))
 
-    if not tags_found:
-        print('[ERROR] No tags found in {0}'.format(video_file))
+
+def safe_remove_file(file):
+    """ Remove file without exceptions thrown """
+
+    try:
+        os.remove(tmp_file)
+    except OSError:
+        pass
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Import video files')
-    parser.add_argument('--takeout-dir', type=str,
-                        help='Directory with videos')
+    parser = argparse.ArgumentParser(description= \
+        '''Import videos (*.mp4; *.mov) into specifed folder organizing them according to "creation_time" information
+        found in any of its media streams. If video is zipped then it will be extracted''')
+        
+    parser.add_argument('--src-dir', type=str,
+                        help='directory containing videos (*.mp4; *.mov)')
     parser.add_argument('--out-dir', type=str,
-                        help='Destination directory')
+                        help='destination directory')
+    parser.add_argument('--log-file', type=str,
+                        help='output file for imported videos list')
 
     args = parser.parse_args()
-
-    takeout_dir = args.takeout_dir
+    log_file = args.log_file
+    src_dir = args.src_dir
     out_dir = args.out_dir
 
     tmp_dir = os.path.join(out_dir, '.tmp')
     os.makedirs(tmp_dir, exist_ok=True)
 
-    copied = []
+    imported = []
 
-    for video_file in glob.glob(os.path.join(takeout_dir, '**/*.*'), recursive=True):
+    for video_file in glob.glob(os.path.join(src_dir, '**/*.*'), recursive=True):
         if not video_file.lower().endswith('.mp4') and not video_file.lower().endswith('.mov'):
             continue
 
         if zipfile.is_zipfile(video_file):
             try:
+                tmp_file = os.path.join(tmp_dir, os.path.basename(video_file))
+
                 z = zipfile.ZipFile(video_file)
                 name = z.namelist()[0]
-            
-                tmp_file = os.path.join(tmp_dir, 'extracted_{0}'.format(os.path.basename(video_file)))
+
                 with z.open(name) as source:
                     with open(tmp_file, "wb") as target:
                         shutil.copyfileobj(source, target)
 
-                process_file(video_file, tmp_file, out_dir)
+                copy_file(tmp_file, out_dir)
 
             except zipfile.BadZipFile:
-                print("[ERROR] Bad zip file {0}".format(video_file))
+                print("[ERROR] BadZipFile {0}".format(video_file))
 
             finally:
-                try:
-                    os.remove(tmp_file)
-                except OSError:
-                    pass
+                safe_remove_file(tmp_file)
         else:
-            process_file(video_file, video_file, out_dir)
+            copy_file(video_file, out_dir)
             
     shutil.rmtree(tmp_dir)
 
-    with open(os.path.join(out_dir, '.imported_video.json'), 'w', encoding='utf-8') as importedfile:
-        json.dump({'files': copied}, importedfile, ensure_ascii=False, indent=4)
+    with open(log_file, 'w', encoding='utf-8') as logfile:
+        json.dump({'files': imported}, logfile, ensure_ascii=False, indent=4)
