@@ -76,7 +76,7 @@ optional arguments:
   ```
 
 ## Usage
-You can use use tools above separately. But if you want to import files from Google Photos you can use PowerShell script **google_photos_takeout.ps1** to make import in one step
+You can use tools above separately. But if you want to import files from Google Photos you can use PowerShell script **google_photos_takeout.ps1** to make import in one step
 
 ## Dependencies
 **import_video.py** and **create_albums_metadata** need _ffprobe_ being available via PATH
