@@ -1,0 +1,10 @@
+<!doctype html>
+<head>
+    <title>View image</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+</head>
+<body>
+    {% for image in images %}
+    <a href="{{url_for('getfile', folder=dir, file=image)}}"><img src="{{url_for('getfile', folder=dir, file=image, thumb='1')}}"/></a>
+    {% endfor %}
+</body>
