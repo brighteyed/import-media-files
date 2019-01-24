@@ -5,11 +5,28 @@ import glob
 import os
 import subprocess
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ExifTags
 
 
 def create_thumbnail(input_file, out_file, size):
-    thumbnail = ImageOps.fit(Image.open(input_file), size, Image.ANTIALIAS)
+    image = Image.open(input_file)
+
+    for orientation in ExifTags.TAGS.keys() : 
+        if ExifTags.TAGS[orientation] == 'Orientation':
+            break
+
+    exif_info = image._getexif()
+    if exif_info:
+        exif = dict(exif_info.items())
+
+        if exif.get(orientation, 0) == 3: 
+            image=image.rotate(180, expand=True)
+        elif exif.get(orientation, 0) == 6: 
+            image=image.rotate(270, expand=True)
+        elif exif.get(orientation, 0) == 8: 
+            image=image.rotate(90, expand=True)
+
+    thumbnail = ImageOps.fit(image, size, Image.ANTIALIAS)
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
     thumbnail.save(out_file, "JPEG")
 
@@ -29,6 +46,8 @@ if __name__ == '__main__':
     thumbnails_dir = args.thumbnails_dir
     src_dir = args.src_dir
     size = args.size
+
+    os.makedirs(thumbnails_dir, exist_ok=True)
 
     parts = size.split(',')
     thumbnail_size = int(parts[0].strip()), int(parts[1].strip()) if parts and len(parts) == 2 else (300, 300)
