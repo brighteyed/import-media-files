@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
 </head>
 <body>
-    {% for image in images %}
-    <a href="{{url_for('getfile', folder=dir, file=image)}}"><img src="{{url_for('getfile', folder=dir, file=image, thumb='1')}}"/></a>
+    {% for media_file in media_files %}
+    <a href="{{url_for('getfile', folder=dir, file=media_file)}}"><img src="{{url_for('getfile', folder=dir, file=media_file, thumb='1')}}"/></a>
     {% endfor %}
 </body>
