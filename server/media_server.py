@@ -15,6 +15,8 @@ def is_image_file(filename):
 def is_video_file(filename):
     return filename.lower().endswith('.mp4') or filename.lower().endswith('.mov')
 
+app.jinja_env.globals.update(is_video_file=is_video_file)
+
 @app.route('/')
 def index():
     return render_template('index.html', 
