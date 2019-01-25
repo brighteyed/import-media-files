@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import argparse
+import json
 import os
 
 from flask import Flask
@@ -19,8 +20,19 @@ app.jinja_env.globals.update(is_video_file=is_video_file)
 
 @app.route('/')
 def index():
-    return render_template('index.html', 
-        folders=[dir for dir in os.listdir(ROOT_DIR) if os.path.isdir(os.path.join(ROOT_DIR, dir))])
+    dirs=[]
+    for dir in os.listdir(ROOT_DIR):
+        dirpath = os.path.join(ROOT_DIR, dir)
+        if os.path.isdir(dirpath):
+            metadata_file = os.path.join(dirpath, '{0}.json'.format(dir))
+            title = dir
+            if os.path.isfile(metadata_file):
+                with open(metadata_file, encoding='utf-8') as albumdata:
+                    title = json.load(albumdata)['title']
+
+            dirs.append((dir, title))
+
+    return render_template('index.html', folders=sorted(dirs, key=lambda tup: tup[1]))
 
 @app.route('/view/<dirname>')
 def viewdir(dirname):
