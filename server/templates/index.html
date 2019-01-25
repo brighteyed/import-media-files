@@ -1,0 +1,10 @@
+<!doctype html>
+<head>
+    <title>View image</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+</head>
+<body>
+    {% for folder in folders %}
+    <a href="{{url_for('viewdir', dirname=folder)}}">{{folder}}</a><br/>
+    {% endfor %}
+</body>
