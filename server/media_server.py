@@ -34,7 +34,7 @@ def index():
 
     return render_template('index.html', folders=sorted(dirs, key=lambda tup: tup[1]))
 
-@app.route('/view/<dirname>')
+@app.route('/<dirname>')
 def viewdir(dirname):
     return render_template('viewdir.html', 
         media_files=[file for file in os.listdir(os.sep.join([ROOT_DIR, dirname])) if is_image_file(file) or is_video_file(file)],
