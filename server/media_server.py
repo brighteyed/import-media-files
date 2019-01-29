@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import sqlite3
 
 from flask import Flask
 from flask import abort, render_template, request, send_file, url_for
@@ -36,15 +37,27 @@ def index():
 
 @app.route('/<dirname>')
 def viewdir(dirname):
-    return render_template('viewdir.html', 
-        media_files=[file for file in os.listdir(os.sep.join([ROOT_DIR, dirname])) if is_image_file(file) or is_video_file(file)],
-        dir=dirname)
+
+    files=[]
+    for file in os.listdir(os.sep.join([ROOT_DIR, dirname])):
+        if is_image_file(file) or is_video_file(file):
+            files.append("'{0}'".format(os.sep.join([dirname, file])))
+    
+    db = sqlite3.connect(args.db_file)
+    
+    c = db.cursor()
+    c.execute("SELECT * FROM Info WHERE path IN ({0}) ORDER BY creation_time".format(','.join(files)))
+    sorted_by_timestamp = [entry[0].split(os.sep)[1] for entry in c.fetchall()]
+    
+    db.close()
+
+    return render_template('viewdir.html', media_files=sorted_by_timestamp, dir=dirname)
 
 @app.route('/<folder>/<file>')
 def getfile(folder, file):
     thumb = request.args.get('thumb', 0, type=int)
     if thumb == 1:
-        return send_file(os.sep.join([THUMBS_ROOT_DIR, folder, '{0}.jpg'.format(os.path.splitext(file)[0])]), mimetype='image/jpg')
+        return send_file(os.sep.join([THUMBNAILS_DIR, folder, '{0}.jpg'.format(os.path.splitext(file)[0])]), mimetype='image/jpg')
 
     return send_file(os.sep.join([ROOT_DIR, folder, file]), mimetype='video/mp4' if is_video_file(file) else 'image/jpg')
 
@@ -54,9 +67,11 @@ if __name__ == '__main__':
         
     parser.add_argument('--thumbnails-dir', type=str, required=True, help='destination containing thumbnails')
     parser.add_argument('--media-dir', type=str, required=True, help='directory containing media files (*.jpg; *.jpeg; *.mp4; *.mov')
+    parser.add_argument('--db-file', type=str, required=True, help='path to media info database file')
 
     args = parser.parse_args()
     ROOT_DIR = args.media_dir
-    THUMBS_ROOT_DIR = args.thumbnails_dir
+    THUMBNAILS_DIR = args.thumbnails_dir
+    INFO_DB = args.db_file
 
     app.run()
