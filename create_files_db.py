@@ -27,8 +27,7 @@ if __name__ == "__main__":
     db = sqlite3.connect(db_file)
     c = db.cursor()
 
-    c.execute('DROP TABLE IF EXISTS Info')
-    c.execute('CREATE TABLE Info (path TEXT PRIMARY KEY, creation_time TIMESTAMP)')
+    c.execute('CREATE TABLE IF NOT EXISTS Info (path TEXT PRIMARY KEY, creation_time TIMESTAMP)')
 
     try:
         for src_file in glob.glob(os.path.join(src_dir, '**/*.*'), recursive=True):
