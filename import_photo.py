@@ -35,12 +35,19 @@ if __name__ == '__main__':
         try:
             with open(src_file, 'rb') as file:
                 tags = exifread.process_file(file, details=False)
-                if 'EXIF DateTimeOriginal' not in tags.keys():
-                    print('[ERROR] No EXIF info found in {0}'.format(src_file))
+                
+                tag = None
+                if 'EXIF DateTimeOriginal' in tags.keys():
+                    tag = tags['EXIF DateTimeOriginal']
+                elif 'EXIF DateTimeDigitized' in tags.keys():
+                    tag = tags['EXIF DateTimeDigitized']
+
+                if not tag:
+                    print('[ERROR] Creation time not found in {0}'.format(src_file))
                     continue
 
                 try:
-                    dt = datetime.datetime.strptime(str(tags['EXIF DateTimeOriginal']).split(' ')[0], '%Y:%m:%d')
+                    dt = datetime.datetime.strptime(str(tag).split(' ')[0], '%Y:%m:%d')
                     dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
                     os.makedirs(dst_dir, exist_ok=True)
 
