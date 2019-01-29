@@ -7,49 +7,47 @@ import json
 import os
 import shutil
 import subprocess
+import time
 import zipfile
+
+from datetime import datetime
 
 
 def copy_file(video_file, out_dir):
     """ Copy video file into %Y-%m-%d subfolder of the out_dir """
 
-    cmnd = ['ffprobe.exe', '-show_streams', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
+    cmnd = ['ffprobe.exe', '-show_format', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
     p = subprocess.Popen(cmnd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, _err = p.communicate()
     
     info = json.loads(out.decode('utf-8'))
     creation_time_found = False
 
-    if 'streams' in info:
-        for stream in info['streams']:
-            if not 'tags' in stream:
-                continue
+    if 'format' in info and 'tags' in info['format']:
+        tags = info['format']['tags']
+        if 'creation_time' in tags:
+            creation_time_found = True
 
-            tags = stream['tags']
+            now_timestamp = time.time()
+            utc_offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)
+            dt = datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ') + utc_offset
 
-            if 'creation_time' in tags:
-                creation_time_found = True
+            dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
 
-                dt = datetime.datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
-                
-                dst_file = os.path.join(dst_dir, os.path.basename(video_file))
-                if os.path.exists(dst_file):
-                    print('[WARNING] File already exists {0}'.format(dst_file))
-                    break
-
+            dst_file = os.path.join(dst_dir, os.path.basename(video_file))
+            if os.path.exists(dst_file):
+                print('[WARNING] File already exists {0}'.format(dst_file))
+            else:
                 os.makedirs(dst_dir, exist_ok=True)
                 shutil.copy(video_file, dst_dir)
 
                 imported.append(os.sep.join(
                     [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]
-                    ))
-
-                break
+                    ))            
 
     if not creation_time_found:
         print('[ERROR] Creation time not found in {0}'.format(video_file))
-
+ 
 
 def safe_remove_file(file):
     """ Remove file without exceptions thrown """
