@@ -28,7 +28,10 @@ if __name__ == '__main__':
 
     imported = []
 
-    for src_file in glob.glob(os.path.join(src_dir, '**/*.jpg'), recursive=True):
+    for src_file in glob.glob(os.path.join(src_dir, '**/*.*'), recursive=True):
+        if not src_file.lower().endswith('.jpg') and not src_file.lower().endswith('.jpeg'):
+            continue
+
         try:
             with open(src_file, 'rb') as file:
                 tags = exifread.process_file(file, details=False)
