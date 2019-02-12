@@ -6,11 +6,15 @@ import exifread
 import glob
 import json
 import os
-import sqlite3
 import subprocess
 import time
 
 from datetime import datetime
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from app import Metadata
+from models.mediafile import MediaFile
 
 
 if __name__ == "__main__":
@@ -24,10 +28,12 @@ if __name__ == "__main__":
     src_dir = args.src_dir
     db_file = args.db_file
 
-    db = sqlite3.connect(db_file)
-    c = db.cursor()
+    engine = create_engine("sqlite:///{0}".format(db_file))
+    Metadata.drop_all(bind=engine, tables=[MediaFile.__table__])
+    Metadata.create_all(engine)
 
-    c.execute('CREATE TABLE IF NOT EXISTS Info (path TEXT PRIMARY KEY, creation_time TIMESTAMP)')
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
     try:
         for src_file in glob.glob(os.path.join(src_dir, '**/*.*'), recursive=True):
@@ -47,10 +53,9 @@ if __name__ == "__main__":
                         continue
 
                     try:
+                        path = os.sep.join([os.path.basename(os.path.dirname(src_file)), os.path.basename(src_file)])
                         dt = datetime.strptime(str(tag), '%Y:%m:%d %H:%M:%S')
-                        c.execute("INSERT INTO Info (path, creation_time) VALUES('{0}', '{1}')".format(
-                            os.sep.join([os.path.basename(os.path.dirname(src_file)), os.path.basename(src_file)]), 
-                            dt.isoformat()))
+                        session.add(MediaFile(path, dt))
 
                     except ValueError:
                         print('[ERROR] Creation time not found in {0}'.format(src_file))
@@ -73,18 +78,14 @@ if __name__ == "__main__":
                         utc_offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)
                         dt = datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ') + utc_offset
 
-                        c.execute("INSERT INTO Info (path, creation_time) VALUES('{0}', '{1}')".format(
-                                    os.sep.join([os.path.basename(os.path.dirname(src_file)), os.path.basename(src_file)]), 
-                                    dt.isoformat()))
+                        path = os.sep.join([os.path.basename(os.path.dirname(src_file)), os.path.basename(src_file)])
+                        session.add(MediaFile(path, dt))
 
                 if not creation_time_found:
                     print('[ERROR] Creation time not found in {0}'.format(src_file))
 
-        db.commit()
+        session.commit()
 
     except:
         print('[ERROR] Error while creating database')
-        db.rollback()
-
-    db.close()
-
+        session.rollback()

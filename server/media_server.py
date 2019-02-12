@@ -3,12 +3,17 @@
 import argparse
 import json
 import os
-import sqlite3
 
 from flask import Flask
 from flask import abort, render_template, request, send_file, url_for
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+from models.mediafile import MediaFile
+
+
+Session = sessionmaker()
 app = Flask(__name__)
 
 def is_image_file(filename):
@@ -41,15 +46,13 @@ def viewdir(dirname):
     files=[]
     for file in os.listdir(os.sep.join([ROOT_DIR, dirname])):
         if is_image_file(file) or is_video_file(file):
-            files.append("'{0}'".format(os.sep.join([dirname, file])))
+            files.append("{0}".format(os.sep.join([dirname, file])))
     
-    db = sqlite3.connect(args.db_file)
-    
-    c = db.cursor()
-    c.execute("SELECT * FROM Info WHERE path IN ({0}) ORDER BY creation_time".format(','.join(files)))
-    sorted_by_timestamp = [entry[0].split(os.sep)[1] for entry in c.fetchall()]
-    
-    db.close()
+    engine = create_engine("sqlite:///{0}".format(INFO_DB))
+    Session.configure(bind=engine)
+
+    session = Session()
+    sorted_by_timestamp = [entry.path.split(os.sep)[1] for entry in session.query(MediaFile).filter(MediaFile.path.in_(files)).order_by(MediaFile.dt)]
 
     return render_template('viewdir.html', media_files=sorted_by_timestamp, dir=dirname)
 
