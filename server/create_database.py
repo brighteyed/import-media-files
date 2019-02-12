@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app import Metadata
 from models.mediafile import MediaFile
+from models.mediadir import MediaDir
 
 
 if __name__ == "__main__":
@@ -29,13 +30,31 @@ if __name__ == "__main__":
     db_file = args.db_file
 
     engine = create_engine("sqlite:///{0}".format(db_file))
-    Metadata.drop_all(bind=engine, tables=[MediaFile.__table__])
+    Metadata.drop_all(bind=engine, tables=[MediaDir.__table__, MediaFile.__table__])
     Metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
     session = Session()
 
     try:
+        media_dirs = {}
+        for basename in os.listdir(src_dir):
+            dirpath = os.path.join(src_dir, basename)
+            if os.path.isdir(dirpath):
+                metadata_file = os.path.join(dirpath, '{0}.json'.format(basename))
+                display_name = basename
+                is_album = False
+                if os.path.isfile(metadata_file):
+                    is_album = True
+                    with open(metadata_file, encoding='utf-8') as albumdata:
+                        display_name = json.load(albumdata)['title']
+
+                dir_entry = MediaDir(basename, display_name, is_album)
+                media_dirs[basename] = dir_entry
+                session.add(dir_entry)
+
+        session.flush()
+
         for src_file in glob.glob(os.path.join(src_dir, '**/*.*'), recursive=True):
             if src_file.lower().endswith('.jpg') or src_file.lower().endswith('.jpeg'):
 
@@ -53,9 +72,9 @@ if __name__ == "__main__":
                         continue
 
                     try:
-                        path = os.sep.join([os.path.basename(os.path.dirname(src_file)), os.path.basename(src_file)])
-                        dt = datetime.strptime(str(tag), '%Y:%m:%d %H:%M:%S')
-                        session.add(MediaFile(path, dt))
+                        session.add(MediaFile(media_dirs[os.path.basename(os.path.dirname(src_file))].id,
+                                                os.path.basename(src_file),
+                                                datetime.strptime(str(tag), '%Y:%m:%d %H:%M:%S')))
 
                     except ValueError:
                         print('[ERROR] Creation time not found in {0}'.format(src_file))
@@ -78,8 +97,9 @@ if __name__ == "__main__":
                         utc_offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)
                         dt = datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ') + utc_offset
 
-                        path = os.sep.join([os.path.basename(os.path.dirname(src_file)), os.path.basename(src_file)])
-                        session.add(MediaFile(path, dt))
+                        session.add(MediaFile(media_dirs[os.path.basename(os.path.dirname(src_file))].id,
+                                                os.path.basename(src_file),
+                                                dt))
 
                 if not creation_time_found:
                     print('[ERROR] Creation time not found in {0}'.format(src_file))

@@ -5,15 +5,13 @@ import json
 import os
 
 from flask import Flask
-from flask import abort, render_template, request, send_file, url_for
+from flask import render_template, request, send_file, url_for
+from flask_sqlalchemy import SQLAlchemy
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
+from models.mediadir import MediaDir
 from models.mediafile import MediaFile
 
 
-Session = sessionmaker()
 app = Flask(__name__)
 
 def is_image_file(filename):
@@ -26,35 +24,15 @@ app.jinja_env.globals.update(is_video_file=is_video_file)
 
 @app.route('/')
 def index():
-    dirs=[]
-    for dir in os.listdir(ROOT_DIR):
-        dirpath = os.path.join(ROOT_DIR, dir)
-        if os.path.isdir(dirpath):
-            metadata_file = os.path.join(dirpath, '{0}.json'.format(dir))
-            title = dir
-            if os.path.isfile(metadata_file):
-                with open(metadata_file, encoding='utf-8') as albumdata:
-                    title = json.load(albumdata)['title']
-
-            dirs.append((dir, title))
-
-    return render_template('index.html', folders=sorted(dirs, key=lambda tup: tup[1]))
+    dirs = [(entry.folder_basename, entry.display_name) for entry in db.session.query(MediaDir).order_by(MediaDir.display_name)]
+    
+    return render_template('index.html', folders=dirs)
 
 @app.route('/<dirname>')
 def viewdir(dirname):
+    media_dir = db.session.query(MediaDir).filter_by(folder_basename=dirname).first()
 
-    files=[]
-    for file in os.listdir(os.sep.join([ROOT_DIR, dirname])):
-        if is_image_file(file) or is_video_file(file):
-            files.append("{0}".format(os.sep.join([dirname, file])))
-    
-    engine = create_engine("sqlite:///{0}".format(INFO_DB))
-    Session.configure(bind=engine)
-
-    session = Session()
-    sorted_by_timestamp = [entry.path.split(os.sep)[1] for entry in session.query(MediaFile).filter(MediaFile.path.in_(files)).order_by(MediaFile.dt)]
-
-    return render_template('viewdir.html', media_files=sorted_by_timestamp, dir=dirname)
+    return render_template('viewdir.html', media_files=[] if not media_dir else [f.filename for f in media_dir.media_files], dir=dirname)
 
 @app.route('/<folder>/<file>')
 def getfile(folder, file):
@@ -75,6 +53,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     ROOT_DIR = args.media_dir
     THUMBNAILS_DIR = args.thumbnails_dir
-    INFO_DB = args.db_file
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{0}".format(args.db_file)
+    db = SQLAlchemy(app)
 
     app.run()

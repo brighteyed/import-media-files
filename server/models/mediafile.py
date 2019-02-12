@@ -1,16 +1,18 @@
-from sqlalchemy import create_engine, Integer, Column, String, DateTime
+from sqlalchemy import create_engine, Column, ForeignKey, DateTime, Integer, String
 from app import Base
 
 
 class MediaFile(Base):
-    """ Media file database entry. Also describes datatable """
+    """ Media file. Also describes datatable """
     
-    __tablename__ = 'Info'
+    __tablename__ = 'MediaFiles'
 
     id = Column(Integer, primary_key=True)
-    path = Column(String)
-    dt = Column(DateTime)
+    filename = Column(String)
+    folder = Column(Integer, ForeignKey('MediaDirs.id'))
+    timestamp = Column(DateTime)
 
-    def __init__(self, path, dt):
-        self.path = path
-        self.dt = dt
+    def __init__(self, folder, filename, timestamp):
+        self.folder = folder
+        self.filename = filename
+        self.timestamp = timestamp
