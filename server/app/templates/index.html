@@ -4,12 +4,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
 </head>
 <body>
+    <div>
+    {% if is_albums_mode %}
+    <a href="{{url_for('index')}}">DIRECTORIES</a>
+    {% else %}
+    <a href="{{url_for('index', albums='1')}}">ALBUMS</a>
+    {% endif %}
+    </div>
+
+    <div>
     {% if prev_url %}
-    <a href="{{prev_url}}">Prev</a>
+    <a href="{{prev_url}}">PREV</a>
     {% endif %}
     {% if next_url %}
-    <a href="{{next_url}}">Next</a>
+    <a href="{{next_url}}">NEXT</a>
     {% endif %}
+    </div>
+
     <div>
     {% for (folder, name) in folders %}
     <a href="{{url_for('viewdir', dirname=folder)}}">{{name}}</a><br/>
