@@ -1,7 +1,6 @@
-from sqlalchemy import create_engine, Column, Boolean, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Boolean, Integer, String
+from app import app_db
 from app import Base
-
 from .mediafile import MediaFile
 
 
@@ -15,7 +14,7 @@ class MediaDir(Base):
     display_name = Column(String)
     is_album = Column(Boolean)
 
-    media_files = relationship("MediaFile", order_by=MediaFile.timestamp)
+    media_files = app_db.relationship("MediaFile", order_by=MediaFile.timestamp, lazy='dynamic')
 
     def __init__(self, folder_basename, display_name, is_album):
         self.folder_basename = folder_basename

@@ -13,7 +13,7 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app import Metadata
+from app import db_metadata
 from models.mediafile import MediaFile
 from models.mediadir import MediaDir
 
@@ -30,8 +30,8 @@ if __name__ == "__main__":
     db_file = args.db_file
 
     engine = create_engine("sqlite:///{0}".format(db_file))
-    Metadata.drop_all(bind=engine, tables=[MediaDir.__table__, MediaFile.__table__])
-    Metadata.create_all(engine)
+    db_metadata.drop_all(bind=engine, tables=[MediaDir.__table__, MediaFile.__table__])
+    db_metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
     session = Session()
