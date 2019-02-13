@@ -72,7 +72,7 @@ if __name__ == '__main__':
     ALBUMS_DIR = args.albums_dir
     ROOT_DIR = args.media_dir
 
-    FILES_PER_PAGE=8
+    FILES_PER_PAGE=30
     DIRS_PER_PAGE=40
 
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{0}".format(args.db_file)
