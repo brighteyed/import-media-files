@@ -1,15 +1,15 @@
 <!doctype html>
 <head>
-    <title>View image</title>
+    <title>View directory</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
     {% if prev_url %}
-    <a href="{{prev_url}}">PREV</a>
+    <a class="nav" href="{{prev_url}}">Prev</a>
     {% endif %}
     {% if next_url %}
-    <a href="{{next_url}}">NEXT</a>
+    <a class="nav" href="{{next_url}}">Next</a>
     {% endif %}
     <div>
     {% for media_file in media_files %}
