@@ -1,0 +1,30 @@
+<!doctype html>
+<head>
+    <title>Media server</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div>
+    {% if is_albums_mode %}
+    <a class="nav" href="{{url_for('index')}}">Directories</a>
+    {% else %}
+    <a class="nav" href="{{url_for('index', albums='1')}}">Albums</a>
+    {% endif %}
+    </div>
+
+    <div>
+    {% if prev_url %}
+    <a class="nav" href="{{prev_url}}">Prev</a>
+    {% endif %}
+    {% if next_url %}
+    <a class="nav" href="{{next_url}}">Next</a>
+    {% endif %}
+    </div>
+
+    <div>
+    {% for (folder, name) in folders %}
+    <a href="{{url_for('viewdir', dirname=folder)}}">{{name}}</a><br/>
+    {% endfor %}
+    </div>
+</body>
