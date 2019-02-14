@@ -21,8 +21,8 @@ def index():
 
     media_dirs_query = app_db.session.query(MediaDir).filter_by(is_album=is_albums_mode).order_by(MediaDir.display_name)
     media_dirs = media_dirs_query.paginate(request.args.get('page', 1, type=int), DIRS_PER_PAGE, False)
-    next_url = url_for('index', page=media_dirs.next_num) if media_dirs.has_next else None
-    prev_url = url_for('index', page=media_dirs.prev_num) if media_dirs.has_prev else None
+    next_url = url_for('index', page=media_dirs.next_num, albums=1 if is_albums_mode else None) if media_dirs.has_next else None
+    prev_url = url_for('index', page=media_dirs.prev_num, albums=1 if is_albums_mode else None) if media_dirs.has_prev else None
 
     return render_template('index.html', 
                 folders=[(entry.folder_basename, entry.display_name) for entry in media_dirs.items],
