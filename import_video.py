@@ -47,10 +47,10 @@ def copy_file(video_file, out_dir):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Import videos (*.mp4; *.mov) into specifed folder organizing them according to 'creation_time' information found in any of its media streams")
+    parser = argparse.ArgumentParser(description="Import videos (*.mp4; *.mov; *.mpg) into specifed folder organizing them according to 'creation_time' information found in any of its media streams")
 
     parser.add_argument('--src-dir', type=str,
-                        help='directory containing videos (*.mp4; *.mov)')
+                        help='directory containing videos (*.mp4; *.mov; *.mpg)')
     parser.add_argument('--out-dir', type=str,
                         help='destination directory')
     parser.add_argument('--log-file', type=str,
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     imported = []
 
     for video_file in glob.glob(os.path.join(src_dir, '**/*.*'), recursive=True):
-        if not video_file.lower().endswith('.mp4') and not video_file.lower().endswith('.mov'):
+        if not video_file.lower().endswith('.mp4') and not video_file.lower().endswith('.mov') and not video_file.lower().endswith('.mpg'):
             continue
 
         copy_file(video_file, out_dir)

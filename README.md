@@ -20,11 +20,11 @@ optional arguments:
 usage: import_video.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
                        [--log-file LOG_FILE]
 
-Import videos (*.mp4; *.mov) into specifed folder organizing them according to "creation_time" information found in any of its media streams
+Import videos (*.mp4; *.mov; *.mpg) into specifed folder organizing them according to "creation_time" information found in any of its media streams
 
 optional arguments:
   -h, --help           show this help message and exit
-  --src-dir SRC_DIR    directory containing videos (*.mp4; *.mov)
+  --src-dir SRC_DIR    directory containing videos (*.mp4; *.mov; *.mpg)
   --out-dir OUT_DIR    destination directory
   --log-file LOG_FILE  output file for imported videos list
   ```
