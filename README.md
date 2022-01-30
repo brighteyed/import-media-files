@@ -20,7 +20,7 @@ optional arguments:
 usage: import_video.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
                        [--log-file LOG_FILE]
 
-Import videos (*.mp4; *.mov) into specifed folder organizing them according to "creation_time" information found in any of its media streams. If video is zipped then it will be extracted
+Import videos (*.mp4; *.mov) into specifed folder organizing them according to "creation_time" information found in any of its media streams
 
 optional arguments:
   -h, --help           show this help message and exit
