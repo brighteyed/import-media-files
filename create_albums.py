@@ -9,10 +9,8 @@ import uuid
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description= \
-        '''Copy media files into folders (one folder per album) according to album
-        descriptions provided in <UUID>.json files''')
-        
+    parser = argparse.ArgumentParser(description="Copy media files into folders (one folder per album) according to album descriptions provided in <UUID>.json files")
+
     parser.add_argument('--src-dir', type=str,
                         help='directory containing imported photos, videos and albums metadata files')
     parser.add_argument('--out-dir', type=str,
@@ -44,7 +42,7 @@ if __name__ == '__main__':
 
             for file in albumdata['files']:
                 media_file = os.path.join(src_dir, file)
-                
+
                 if not os.path.exists(media_file):
                     print("[ERROR] Can't place photo {0} into album. File not found".format(media_file))
                     continue

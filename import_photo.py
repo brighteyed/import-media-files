@@ -10,9 +10,7 @@ import shutil
 import exifread
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description= \
-        '''Import photos (*.jpg) into specified folder organizing them according 
-        to EXIF DateTimeOriginal tag''')
+    parser = argparse.ArgumentParser(description="Import photos (*.jpg) into specified folder organizing them according to EXIF DateTimeOriginal tag")
 
     parser.add_argument('--src-dir', type=str,
                         help='directory containing photos (*.jpg)')
@@ -35,7 +33,7 @@ if __name__ == '__main__':
         try:
             with open(src_file, 'rb') as file:
                 tags = exifread.process_file(file, details=False)
-                
+
                 tag = None
                 if 'EXIF DateTimeOriginal' in tags.keys():
                     tag = tags['EXIF DateTimeOriginal']
@@ -59,14 +57,13 @@ if __name__ == '__main__':
                     shutil.copy(src_file, dst_dir)
 
                     imported.append(os.sep.join(
-                        [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]
-                        ))
+                        [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]))
 
                 except ValueError:
                     print('[ERROR] ValueError {0}'.format(src_file))
 
         except PermissionError:
             print('[ERROR] PermissionError {0}'.format(src_file))
-    
+
     with open(log_file, 'w', encoding='utf-8') as logfile:
         json.dump({'files': imported}, logfile, ensure_ascii=False, indent=4)
