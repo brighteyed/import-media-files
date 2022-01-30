@@ -85,6 +85,8 @@ if __name__ == '__main__':
             albumdata = {}
             albumdata['title'] = metadata['title']
             albumdata['date'] = metadata['date']
+            albumdata['description'] = metadata['description']
+            albumdata['enrichments'] = metadata['enrichments'] if 'enrichments' in metadata else []
             albumdata['files'] = []
 
             for media_file in glob.glob(os.path.join(os.path.dirname(json_file), '*.*')):
