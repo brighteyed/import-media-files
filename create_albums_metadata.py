@@ -103,7 +103,7 @@ if __name__ == '__main__':
             for media_file in glob.glob(os.path.join(os.path.dirname(json_file), '*.*')):
                 if media_file.lower().endswith('.jpg'):
                     albumdata['files'].append(process_photo(media_file))
-                if media_file.lower().endswith('.mp4') or media_file.lower().endswith('.mov'):
+                if media_file.lower().endswith('.mp4') or media_file.lower().endswith('.mov') or media_file.lower().endswith('.mpg'):
                     if zipfile.is_zipfile(media_file):
                         try:
                             tmp_file = os.path.join(tmp_dir, os.path.basename(media_file))
