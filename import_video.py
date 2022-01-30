@@ -10,6 +10,8 @@ import time
 
 from datetime import datetime
 
+from utils import files
+
 
 def copy_file(video_file, out_dir):
     """ Copy video file into %Y-%m-%d subfolder of the out_dir """
@@ -31,12 +33,13 @@ def copy_file(video_file, out_dir):
             dt = datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ') + utc_offset
 
             dst_dir = os.path.join(out_dir, dt.strftime('%Y-%m-%d'))
+            os.makedirs(dst_dir, exist_ok=True)
 
             dst_file = os.path.join(dst_dir, os.path.basename(video_file))
             if os.path.exists(dst_file):
-                print('[WARNING] File already exists {0}'.format(dst_file))
+                if not files.equal(video_file, dst_file):
+                    print('[WARNING] Different file already exists {0}'.format(dst_file))
             else:
-                os.makedirs(dst_dir, exist_ok=True)
                 shutil.copy(video_file, dst_dir)
 
                 imported.append(os.sep.join(

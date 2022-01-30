@@ -6,8 +6,9 @@ import glob
 import json
 import os
 import shutil
-
 import exifread
+
+from utils import files
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Import photos (*.jpg; *.jpeg) into specified folder organizing them according to EXIF DateTimeOriginal tag")
@@ -51,7 +52,8 @@ if __name__ == '__main__':
 
                     dst_file = os.path.join(dst_dir, os.path.basename(src_file))
                     if os.path.exists(dst_file):
-                        print('[WARNING] File already exists {0}'.format(dst_file))
+                        if not files.equal(src_file, dst_file):
+                            print('[WARNING] Different file already exists {0}'.format(dst_file))
                         continue
 
                     shutil.copy(src_file, dst_dir)
