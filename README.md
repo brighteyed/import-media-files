@@ -68,20 +68,6 @@ optional arguments:
   --log-files LOG_FILES [LOG_FILES ...]
                         log files that were generated during import
   ```
-  - create_thumbnails.py
-  ```$ python create_thumbnails.py --help
-usage: create_thumbnails.py [-h] --src-dir SRC_DIR --thumbnails-dir
-                            THUMBNAILS_DIR [--size SIZE]
-
-Create image thumbnails
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --src-dir SRC_DIR     directory containing images
-  --thumbnails-dir THUMBNAILS_DIR
-                        destination directory for thumbnails
-  --size SIZE           size of a thumbnail image (defaults to 300,300)
-  ```
 
 ## Usage
 You can use tools above separately. But if you want to import files from Google Photos you can use PowerShell script **google_photos_takeout.ps1** to make import in one step
