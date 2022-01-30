@@ -46,6 +46,4 @@ if __name__ == '__main__':
 
                 os.remove(media_file)
 
-        os.remove(os.path.join(files_dir, filename))
-
     removeEmptyFolders(files_dir, False)
