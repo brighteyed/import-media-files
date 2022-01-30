@@ -10,10 +10,10 @@ import shutil
 import exifread
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Import photos (*.jpg) into specified folder organizing them according to EXIF DateTimeOriginal tag")
+    parser = argparse.ArgumentParser(description="Import photos (*.jpg; *.jpeg) into specified folder organizing them according to EXIF DateTimeOriginal tag")
 
     parser.add_argument('--src-dir', type=str,
-                        help='directory containing photos (*.jpg)')
+                        help='directory containing photos (*.jpg; *.jpeg)')
     parser.add_argument('--out-dir', type=str,
                         help='destination directory')
     parser.add_argument('--log-file', type=str,

@@ -7,11 +7,11 @@ Set of tools for importing photo and video files into specified folder organizin
 usage: import_photo.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
                        [--log-file LOG_FILE]
 
-Import photos (*.jpg) into specified folder organizing them according to EXIF tags
+Import photos (*.jpg; *.jpeg) into specified folder organizing them according to EXIF tags
 
 optional arguments:
   -h, --help           show this help message and exit
-  --src-dir SRC_DIR    directory containing photos (*.jpg)
+  --src-dir SRC_DIR    directory containing photos (*.jpg; *.jpeg)
   --out-dir OUT_DIR    destination directory
   --log-file LOG_FILE  output file for imported photos list
   ```
