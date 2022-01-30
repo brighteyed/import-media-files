@@ -80,7 +80,7 @@ if __name__ == '__main__':
         print('Found album directory {0}'.format(album_dir_name))
 
         with open(json_file, encoding='utf-8') as metadata_file:
-            metadata = json.load(metadata_file)['albumData']
+            metadata = json.load(metadata_file)
 
             albumdata = {}
             albumdata['title'] = metadata['title']
