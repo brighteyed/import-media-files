@@ -70,4 +70,4 @@ optional arguments:
   ```
 
 ## Dependencies
-**import_video.py** and **create_albums_metadata** need `ffprobe` being available via `PATH`
+`import_video.py` and `create_albums_metadata.py` need `ffprobe` being available via `PATH`
