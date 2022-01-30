@@ -88,7 +88,7 @@ if __name__ == '__main__':
             albumdata['files'] = []
 
             for media_file in glob.glob(os.path.join(os.path.dirname(json_file), '*.*')):
-                if media_file.lower().endswith('.jpg'):
+                if media_file.lower().endswith('.jpg') or media_file.lower().endswith('.jpeg'):
                     albumdata['files'].append(process_photo(media_file))
                 if media_file.lower().endswith('.mp4') or media_file.lower().endswith('.mov') or media_file.lower().endswith('.mpg'):
                     albumdata['files'].append(process_video(media_file))
