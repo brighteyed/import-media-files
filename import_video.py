@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import argparse
-import datetime
 import glob
 import json
 import os
@@ -19,7 +18,7 @@ def copy_file(video_file, out_dir):
     cmnd = ['ffprobe.exe', '-show_format', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
     p = subprocess.Popen(cmnd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, _err = p.communicate()
-    
+
     info = json.loads(out.decode('utf-8'))
     creation_time_found = False
 
@@ -42,12 +41,11 @@ def copy_file(video_file, out_dir):
                 shutil.copy(video_file, dst_dir)
 
                 imported.append(os.sep.join(
-                    [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]
-                    ))            
+                    [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]))
 
     if not creation_time_found:
         print('[ERROR] Creation time not found in {0}'.format(video_file))
- 
+
 
 def safe_remove_file(file):
     """ Remove file without exceptions thrown """
@@ -59,10 +57,8 @@ def safe_remove_file(file):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description= \
-        '''Import videos (*.mp4; *.mov) into specifed folder organizing them according to "creation_time" information
-        found in any of its media streams. If video is zipped then it will be extracted''')
-        
+    parser = argparse.ArgumentParser(description="Import videos (*.mp4; *.mov) into specifed folder organizing them according to 'creation_time' information found in any of its media streams. If video is zipped then it will be extracted")
+
     parser.add_argument('--src-dir', type=str,
                         help='directory containing videos (*.mp4; *.mov)')
     parser.add_argument('--out-dir', type=str,
@@ -104,7 +100,7 @@ if __name__ == '__main__':
                 safe_remove_file(tmp_file)
         else:
             copy_file(video_file, out_dir)
-            
+
     shutil.rmtree(tmp_dir)
 
     with open(log_file, 'w', encoding='utf-8') as logfile:

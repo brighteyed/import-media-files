@@ -7,7 +7,7 @@ import os
 
 def removeEmptyFolders(path, removeRoot=True):
     """ Recursively remove empty folders """
-    
+
     if not os.path.isdir(path):
         return
 
@@ -22,9 +22,7 @@ def removeEmptyFolders(path, removeRoot=True):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description= \
-        '''Delete previously imported files. It uses log files that was generated
-        while importing''')
+    parser = argparse.ArgumentParser(description="Delete previously imported files. It uses log files that was generated while importing")
 
     parser.add_argument('--files-dir', type=str,
                         help='directory with photo and video files')
@@ -41,13 +39,13 @@ if __name__ == '__main__':
 
             for file in data['files']:
                 media_file = os.path.join(files_dir, file)
-                
+
                 if not os.path.exists(media_file):
                     print('[WARNING]: File not found {0}'.format(media_file))
                     continue
 
                 os.remove(media_file)
-        
+
         os.remove(os.path.join(files_dir, filename))
-    
+
     removeEmptyFolders(files_dir, False)
