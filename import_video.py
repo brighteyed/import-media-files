@@ -37,13 +37,15 @@ def copy_file(video_file, out_dir):
 
             dst_file = os.path.join(dst_dir, os.path.basename(video_file))
             if os.path.exists(dst_file):
-                if not files.equal(video_file, dst_file):
-                    print('[WARNING] Different file already exists {0}'.format(dst_file))
-            else:
-                shutil.copy(video_file, dst_dir)
+                if files.equal(video_file, dst_file):
+                    return
+                if os.path.getsize(video_file) < os.path.getsize(dst_file):
+                    return
 
-                imported.append(os.sep.join(
-                    [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]))
+            shutil.copy(video_file, dst_dir)
+
+            imported.append(os.sep.join(
+                [dt.strftime('%Y-%m-%d'), os.path.basename(dst_file)]))
 
     if not creation_time_found:
         print('[ERROR] Creation time not found in {0}'.format(video_file))

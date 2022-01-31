@@ -52,9 +52,10 @@ if __name__ == '__main__':
 
                     dst_file = os.path.join(dst_dir, os.path.basename(src_file))
                     if os.path.exists(dst_file):
-                        if not files.equal(src_file, dst_file):
-                            print('[WARNING] Different file already exists {0}'.format(dst_file))
-                        continue
+                        if files.equal(src_file, dst_file):
+                            continue
+                        if os.path.getsize(src_file) < os.path.getsize(dst_file):
+                            continue
 
                     shutil.copy(src_file, dst_dir)
 
