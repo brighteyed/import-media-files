@@ -7,7 +7,7 @@ Set of tools for importing photo and video files into specified folder organizin
 usage: import_photo.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
                        [--log-file LOG_FILE]
 
-Import photos (*.jpg; *.jpeg) into a specified folder organizing them according to EXIF tags
+Import photos (*.jpg; *.jpeg) into a specified folder organizing them according to EXIF tags.
 
 optional arguments:
   -h, --help           show this help message and exit
@@ -20,7 +20,7 @@ optional arguments:
 usage: import_video.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
                        [--log-file LOG_FILE]
 
-Import videos (*.mp4; *.mov; *.mpg) into a specified folder organizing them according to "creation_time" information found in any of its media streams
+Import videos (*.mp4; *.mov; *.mpg) into a specified folder organizing them according to "creation_time" information found in any of its media streams.
 
 optional arguments:
   -h, --help           show this help message and exit
@@ -45,8 +45,7 @@ optional arguments:
   ```$ python create_albums.py --help
 usage: create_albums.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
 
-Copy media files into folders (one folder per album) according to album
-descriptions provided in <UUID>.json files
+Copy media files into folders (one folder per album) according to album descriptions provided in <UUID>.json files.
 
 optional arguments:
   -h, --help         show this help message and exit
@@ -70,4 +69,4 @@ optional arguments:
   ```
 
 ## Dependencies
-`import_video.py` and `create_albums_metadata.py` need `ffprobe` being available via `PATH`
+`import_video.py` and `create_albums_metadata.py` need `ffprobe` being available via `PATH`.
