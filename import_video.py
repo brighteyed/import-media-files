@@ -16,7 +16,7 @@ from utils import files
 def copy_file(video_file, out_dir):
     """ Copy video file into %Y-%m-%d subfolder of the out_dir """
 
-    cmnd = ['ffprobe.exe', '-show_format', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
+    cmnd = ['ffprobe', '-show_format', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
     p = subprocess.Popen(cmnd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, _err = p.communicate()
 
