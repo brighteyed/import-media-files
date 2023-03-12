@@ -1,0 +1,9 @@
+*
+
+!requirements.txt
+
+!import_files.sh
+
+!import_photo.py
+!import_video.py
+!utils/files.py

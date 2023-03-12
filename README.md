@@ -70,3 +70,16 @@ optional arguments:
 
 ## Dependencies
 `import_video.py` and `create_albums_metadata.py` need `ffprobe` being available via `PATH`.
+
+## Docker
+It is possible to build a docker image for `import_photo.py` and `import_video.py` tools:
+
+### Build image:
+```
+docker build --file .\docker\Dockerfile --tag import_files .
+```
+
+### Run import:
+```
+docker run -it --rm -v /path/to/source/dir:/source -v /path/to/output/dir:/output -v /path/to/logs/dir:/logs import_files
+```
