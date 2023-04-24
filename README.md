@@ -3,7 +3,7 @@ Set of tools for importing photo and video files into specified folder organizin
 
 ## Tools
   - import_photo.py
-```$ python import_photo.py --help
+```
 usage: import_photo.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
                        [--log-file LOG_FILE]
 
@@ -14,9 +14,10 @@ optional arguments:
   --src-dir SRC_DIR    directory containing photos (*.jpg; *.jpeg)
   --out-dir OUT_DIR    destination directory
   --log-file LOG_FILE  output file for imported photos list
-  ```
+```
+
   - import_video.py
-  ```$ python import_video.py --help
+```
 usage: import_video.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
                        [--log-file LOG_FILE]
 
@@ -27,9 +28,10 @@ optional arguments:
   --src-dir SRC_DIR    directory containing videos (*.mp4; *.mov; *.mpg)
   --out-dir OUT_DIR    destination directory
   --log-file LOG_FILE  output file for imported videos list
-  ```
+```
+
   - create_albums_metadata.py
-  ```$ python create_albums_metadata.py --help
+```
 usage: create_albums_metadata.py [-h] [--takeout-dir TAKEOUT_DIR]
                                  [--out-dir OUT_DIR]
 
@@ -40,9 +42,10 @@ optional arguments:
   --takeout-dir TAKEOUT_DIR
                         Google Photos takeout directory
   --out-dir OUT_DIR     destination directory
-  ```
+```
+
   - create_albums.py
-  ```$ python create_albums.py --help
+```
 usage: create_albums.py [-h] [--src-dir SRC_DIR] [--out-dir OUT_DIR]
 
 Copy media files into folders (one folder per album) according to album descriptions provided in <UUID>.json files.
@@ -52,9 +55,10 @@ optional arguments:
   --src-dir SRC_DIR  directory containing imported photos, videos and albums
                      metadata files
   --out-dir OUT_DIR  destination directory for albums
-  ```
+```
+
   - revert_import.py
-  ```$ python revert_import.py --help
+```
 usage: revert_import.py [-h] [--files-dir FILES_DIR]
                         [--log-files LOG_FILES [LOG_FILES ...]]
 
@@ -66,7 +70,21 @@ optional arguments:
                         directory with photo and video files
   --log-files LOG_FILES [LOG_FILES ...]
                         log files that were generated during import
-  ```
+```
+
+  - archive_files.py
+```
+usage: archive_files.py [-h] [--metadata METADATA] [--immich-url IMMICH_URL] [--api-key API_KEY] 
+
+Mark files as archived in Immich
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --metadata METADATA   path to archive metadata file (same format as json for album description)
+  --immich-url IMMICH_URL
+                        Immich server URL
+  --api-key API_KEY     Immich API key
+```
 
 ## Dependencies
 `import_video.py` and `create_albums_metadata.py` need `ffprobe` being available via `PATH`.
