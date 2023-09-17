@@ -72,7 +72,7 @@ optional arguments:
                         log files that were generated during import
 ```
 
-  - archive_files.py
+  - immich_archive_files.py
 ```
 usage: archive_files.py [-h] [--metadata METADATA] [--immich-url IMMICH_URL] [--api-key API_KEY] 
 
@@ -84,6 +84,19 @@ optional arguments:
   --immich-url IMMICH_URL
                         Immich server URL
   --api-key API_KEY     Immich API key
+```
+
+  - immich_create_albums.py
+```
+usage: immich_create_albums.py [-h] [--metadata-dir METADATA] [--immich-url IMMICH_URL] [--api-key API_KEY] 
+
+Create albums in Immich according to metadata files
+
+optional arguments:
+  -h, --help               show this help message and exit
+  --metadata-dir METADATA  path to directory with album description metadata files
+  --immich-url IMMICH_URL  Immich server URL
+  --api-key API_KEY        Immich API key
 ```
 
 ## Dependencies
