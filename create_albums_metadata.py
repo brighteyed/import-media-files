@@ -7,6 +7,7 @@ import json
 import os
 import re
 import subprocess
+import time
 import uuid
 import exifread
 
@@ -29,23 +30,22 @@ def process_photo(photo_file):
 
 
 def process_video(video_file):
-    cmnd = ['ffprobe.exe', '-show_streams', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
+    cmnd = ['ffprobe', '-show_format', '-print_format', 'json', '-loglevel', 'quiet', '{0}'.format(video_file)]
     p = subprocess.Popen(cmnd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, _err = p.communicate()
 
     info = json.loads(out.decode('utf-8'))
     creation_time_found = False
 
-    for stream in info['streams']:
-        if 'tags' not in stream:
-            continue
-
-        tags = stream['tags']
-
+    if 'format' in info and 'tags' in info['format']:
+        tags = info['format']['tags']
         if 'creation_time' in tags:
             creation_time_found = True
 
-            dt = datetime.datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            now_timestamp = time.time()
+            utc_offset = datetime.datetime.fromtimestamp(now_timestamp) - datetime.datetime.utcfromtimestamp(now_timestamp)
+            dt = datetime.datetime.strptime(tags['creation_time'], '%Y-%m-%dT%H:%M:%S.%fZ') + utc_offset
+
             return os.sep.join([dt.strftime('%Y-%m-%d'), os.path.basename(video_file)])
 
     if not creation_time_found:
